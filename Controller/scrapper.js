@@ -12,6 +12,7 @@ exports.Scrapper = () => {
       } else {
         const $ = cheerio.load(body);
         let petrolDataFromWebsite = [];
+        // creating data set
         $("table tr").each((index, element) => {
           if (index > 0) {
             petrolDataFromWebsite.push({
@@ -31,16 +32,19 @@ exports.Scrapper = () => {
               console.log("Data saved to file");
             }
           );
+          // calling mongoose to insert items
           petrol_price_list.insertMany(
             petrolDataFromWebsite,
             function (err, docs) {
               if (err) {
-                console.error(err);
+                console.error(err.message);
               } else {
                 console.log("Prices save to db...", docs.length);
               }
             }
           );
+        } else {
+          console.log();
         }
       }
     }

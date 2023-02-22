@@ -1,6 +1,5 @@
 const express = require("express");
 const app = express();
-
 const mongoose = require("mongoose");
 const Scrapper = require("./Controller/scrapper");
 const uri =
@@ -10,5 +9,9 @@ mongoose
   .then(() => {
     console.log("Connected to MongoDB...");
     Scrapper.Scrapper();
+    mongoose.disconnect();
   })
-  .catch((err) => console.error("Could not connect to MongoDB...", err));
+  .catch((err) => {
+    console.error("Could not connect to MongoDB...", err);
+    mongoose.disconnect();
+  });
