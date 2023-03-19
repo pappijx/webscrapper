@@ -3,7 +3,7 @@ const cheerio = require("cheerio");
 const fs = require("fs");
 const petrol_price_list = require("../models/petrol");
 
-exports.Scrapper = () => {
+exports.Scrapper = (mongoose) => {
   request(
     "https://www.ndtv.com/fuel-prices/petrol-price-in-all-state",
     (error, response, body) => {
@@ -23,7 +23,8 @@ exports.Scrapper = () => {
           }
         });
 
-        if (petrolDataFromWebsite.length) {
+        if (petrolDataFromWebsite.length > 0) {
+          mongoose.c;
           fs.writeFile(
             "data.json",
             JSON.stringify(petrolDataFromWebsite),
@@ -33,18 +34,40 @@ exports.Scrapper = () => {
             }
           );
           // calling mongoose to insert items
-          petrol_price_list.insertMany(
-            petrolDataFromWebsite,
-            function (err, docs) {
-              if (err) {
-                console.error(err.message);
-              } else {
-                console.log("Prices save to db...", docs.length);
-              }
+          const bulkOps = petrolDataFromWebsite.map((price) => ({
+            updateOne: {
+              filter: { state: price.state },
+              update: { $set: price },
+              upsert: true,
+            },
+          }));
+
+          petrol_price_list.bulkWrite(bulkOps, (err, result) => {
+            if (err) {
+              mongoose.disconnect();
+              return console.error("error", err.message);
             }
-          );
+            // const {
+            //   BulkWriteResult: { result: actualResult },
+            // } = result;
+            console.table({
+              deleted: result.deletedCount,
+              inserted: result.insertedCount,
+              modified: result.modifiedCount
+            });
+            mongoose.disconnect();
+          });
+
+          // petrol_price_list.insertMany(petrolDataFromWebsite, (err, docs) => {
+          //   if (err) {
+          //     mongoose.disconnect();
+          //     return console.error(err.message);
+          //   }
+          //   console.log(docs);
+          //   mongoose.disconnect();
+          // });
         } else {
-          console.log();
+          console.log("hello");
         }
       }
     }

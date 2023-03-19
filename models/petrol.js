@@ -6,4 +6,4 @@ const petrol_price_list_scheme = new mongoose.Schema({
   change: String,
 });
 
-module.exports = mongoose.model("petrol_price_list", petrol_price_list_scheme);
+module.exports = mongoose.model("petrol_price_lists", petrol_price_list_scheme);

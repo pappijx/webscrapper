@@ -3,15 +3,13 @@ const app = express();
 const mongoose = require("mongoose");
 const Scrapper = require("./Controller/scrapper");
 const uri =
-  "mongodb+srv://pappijx:kAQed0anL0yGhNyx@webscrapper.697h1hj.mongodb.net/store_price";
-mongoose
-  .connect(uri)
-  .then(() => {
-    console.log("Connected to MongoDB...");
-    Scrapper.Scrapper();
-    mongoose.disconnect();
-  })
-  .catch((err) => {
-    console.error("Could not connect to MongoDB...", err);
-    mongoose.disconnect();
-  });
+  "mongodb+srv://pappijx:UmUmYGwqnBr6u3AH@webscrapper.697h1hj.mongodb.net/store_price?retryWrites=true&w=majority";
+
+mongoose.set("strictQuery", false);
+
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+Scrapper.Scrapper(mongoose);
