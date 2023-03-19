@@ -53,7 +53,7 @@ exports.Scrapper = (mongoose) => {
             console.table({
               deleted: result.deletedCount,
               inserted: result.insertedCount,
-              modified: result.modifiedCount
+              modified: result.modifiedCount,
             });
             mongoose.disconnect();
           });
